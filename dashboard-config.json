@@ -1,0 +1,66 @@
+{
+  "program": {
+    "id": "enterprise-it",
+    "name": "Enterprise service health",
+    "timezone": "UTC",
+    "refreshSeconds": 300
+  },
+  "dataSources": {
+    "serviceNow": {
+      "baseUrl": "https://mock-servicenow.local/api/now",
+      "auth": "oauth2-client-credentials",
+      "tables": {
+        "incidents": "incident",
+        "slas": "task_sla",
+        "changes": "change_request",
+        "problems": "problem"
+      },
+      "incrementalKey": "sys_updated_on"
+    },
+    "dynatrace": {
+      "baseUrl": "https://mock-dynatrace.local/api/v2",
+      "auth": "api-token",
+      "endpoints": {
+        "availability": "/v2/metrics/query?metricSelector=dt.host.availability",
+        "health": "/v2/problems",
+        "anomalies": "/v2/events"
+      }
+    }
+  },
+  "scorecard": {
+    "weights": {
+      "availability": 0.25,
+      "slaCompliance": 0.25,
+      "incidentSeverity": 0.2,
+      "mttr": 0.15,
+      "backlogAge": 0.1,
+      "changeSuccess": 0.05
+    },
+    "bands": {
+      "green": 90,
+      "amber": 75
+    }
+  },
+  "insights": {
+    "rules": [
+      {
+        "id": "availability-drop",
+        "when": "availability_7d < availability_30d - 0.5",
+        "priority": "high",
+        "message": "Availability drop detected in the last 7 days"
+      },
+      {
+        "id": "rising-severity",
+        "when": "p1_p2_30d > p1_p2_previous_30d * 1.2",
+        "priority": "high",
+        "message": "P1/P2 trend is rising"
+      },
+      {
+        "id": "sla-forecast",
+        "when": "sla_forecast_next_quarter < sla_target",
+        "priority": "medium",
+        "message": "Upcoming SLA risk requires an owner and due date"
+      }
+    ]
+  }
+}
