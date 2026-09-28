@@ -283,7 +283,7 @@ function Overview() {
       <section className="kpi-grid">
         <KpiCard
           label="Application availability"
-          value="98.82%"
+          value="97.82%"
           delta="+0.14%"
           detail="vs. last month"
           values={[98, 98, 99, 98, 99, 99, 100, 99, 99, 100]}
